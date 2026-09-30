@@ -1,0 +1,4 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/fariha/Desktop/async_fifo_design/rtl/async_fifo.sv" into library work
+INFO: [VRFC 10-311] analyzing module async_fifo
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/fariha/Desktop/async_fifo_design/tb/async_fifo_tb.sv" into library work
+INFO: [VRFC 10-311] analyzing module async_fifo_tb

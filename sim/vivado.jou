@@ -1,0 +1,28 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 12:34:56 MST 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Wed Sep 30 18:08:47 2026
+# Process ID         : 19755
+# Current directory  : /home/fariha/Desktop/async_fifo_design/sim
+# Command line       : vivado -mode gui -source build_vivado.tcl
+# Log file           : /home/fariha/Desktop/async_fifo_design/sim/vivado.log
+# Journal file       : /home/fariha/Desktop/async_fifo_design/sim/vivado.jou
+# Running On         : vlsi-vivado
+# Platform           : Ubuntu
+# Operating System   : Ubuntu 24.04.4 LTS
+# Processor Detail   : Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz
+# CPU Frequency      : 4006.927 MHz
+# CPU Physical cores : 6
+# CPU Logical cores  : 12
+# Host memory        : 41875 MB
+# Swap memory        : 27648 MB
+# Total Virtual      : 69524 MB
+# Available Virtual  : 67335 MB
+#-----------------------------------------------------------
+start_gui
+source build_vivado.tcl
+update_compile_order -fileset sources_1
+launch_simulation
+source async_fifo_tb.tcl

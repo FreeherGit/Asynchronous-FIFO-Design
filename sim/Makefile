@@ -68,14 +68,13 @@ vcd: sim
 schematic:
 	@echo ">>> Generating Vivado project and opening Elaborated RTL Schematic..."
 	@echo "create_project async_fifo_proj ./vivado_proj -part $(FPGA_PART) -force" > build_vivado.tcl
-	@echo "add_files -fileset sources_1 ./rtl/async_fifo.sv" >> build_vivado.tcl
-	@echo "add_files -fileset sim_1 ./tb/tb_async_fifo.sv" >> build_vivado.tcl
+	@echo "add_files -fileset sources_1 ../rtl/async_fifo.sv" >> build_vivado.tcl
+	@echo "add_files -fileset sim_1 ../tb/async_fifo_tb.sv" >> build_vivado.tcl
 	@echo "set_property top $(RTL_TOP) [current_fileset]" >> build_vivado.tcl
 	@echo "set_property top $(TB_TOP) [get_filesets sim_1]" >> build_vivado.tcl
 	@echo "synth_design -rtl -name rtl_1" >> build_vivado.tcl
 	@echo "show_schematic [get_cells -hierarchical]" >> build_vivado.tcl
 	vivado -mode gui -source build_vivado.tcl
-
 # -----------------------------------------------------------------------------
 # 7. Clean All Generated Simulation & Synthesis Artifacts
 # -----------------------------------------------------------------------------

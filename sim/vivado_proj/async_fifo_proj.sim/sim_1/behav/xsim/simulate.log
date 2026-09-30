@@ -1,0 +1,57 @@
+Time resolution is 1 ps
+========================================================================================
+              ASYNCHRONOUS FIFO SELF-CHECKING VERIFICATION REPORT                       
+              Default Config: DATA_WIDTH = 32, FIFO_DEPTH = 16                        
+========================================================================================
+
+----------------------------------------------------------------------------------------
+ >>> TEST 1: Shared Asynchronous Reset (arst_n) Assertion & Deassertion [Req 1]
+----------------------------------------------------------------------------------------
+[               38000 ns] |          Reset Asserted: full flag | Exp:          0 | Eval:          0 | [PASS]
+[               38000 ns] |         Reset Asserted: empty flag | Exp:          1 | Eval:          1 | [PASS]
+[               38000 ns] |           Reset Asserted: wbin ptr | Exp:          0 | Eval:          0 | [PASS]
+[               38000 ns] |           Reset Asserted: rbin ptr | Exp:          0 | Eval:          0 | [PASS]
+[               57000 ns] |          Reset Released: full flag | Exp:          0 | Eval:          0 | [PASS]
+[               57000 ns] |         Reset Released: empty flag | Exp:          1 | Eval:          1 | [PASS]
+
+----------------------------------------------------------------------------------------
+ >>> TEST 2: Extreme Bit Patterns (All-0, All-1, Checkerboard) [Req 2 & 5]
+----------------------------------------------------------------------------------------
+[               76000 ns] | WRITE Transaction                  | Data Written: 0x00000000 | wbin= 1, full=0
+[               86000 ns] | WRITE Transaction                  | Data Written: 0xffffffff | wbin= 2, full=0
+[               96000 ns] | WRITE Transaction                  | Data Written: 0xaaaa5555 | wbin= 3, full=0
+[              106000 ns] | WRITE Transaction                  | Data Written: 0x5555aaaa | wbin= 4, full=0
+[              153000 ns] |         After 4 Writes: empty flag | Exp:          0 | Eval:          0 | [PASS]
+[              153000 ns] |         Read Pattern 1 (All Zeros) | Exp: 0x00000000 | Eval: 0x00000000 | [PASS]
+[              169000 ns] |          Read Pattern 2 (All Ones) | Exp: 0xffffffff | Eval: 0xffffffff | [PASS]
+[              185000 ns] |        Read Pattern 3 (0xAAAA5555) | Exp: 0xaaaa5555 | Eval: 0xaaaa5555 | [PASS]
+[              201000 ns] |        Read Pattern 4 (0x5555AAAA) | Exp: 0x5555aaaa | Eval: 0x5555aaaa | [PASS]
+[              217000 ns] |          After 4 Reads: empty flag | Exp:          1 | Eval:          1 | [PASS]
+
+----------------------------------------------------------------------------------------
+ >>> TEST 3: Continuous Burst Write to Full (16 Words) & Overflow Block [Req 2]
+----------------------------------------------------------------------------------------
+[              416000 ns] |         After 16 Writes: full flag | Exp:          1 | Eval:          1 | [PASS]
+[              416000 ns] |         After 16 Writes: Occupancy | Exp:         16 | Eval:         16 | [PASS]
+[              456000 ns] |   Overflow Blocked: wbin unchanged | Exp:         20 | Eval:         20 | [PASS]
+
+----------------------------------------------------------------------------------------
+ >>> TEST 4: Drain all 16 Words to Empty & Underflow Block [Req 2]
+----------------------------------------------------------------------------------------
+[              505000 ns] |                Burst Read Word [0] | Exp: 0xa0000000 | Eval: 0xa0000000 | [PASS]
+[              521000 ns] |                Burst Read Word [1] | Exp: 0xa0000001 | Eval: 0xa0000001 | [PASS]
+[              729000 ns] |               Burst Read Word [14] | Exp: 0xa000000e | Eval: 0xa000000e | [PASS]
+[              745000 ns] |               Burst Read Word [15] | Exp: 0xa000000f | Eval: 0xa000000f | [PASS]
+[              761000 ns] |         After 16 Reads: empty flag | Exp:          1 | Eval:          1 | [PASS]
+[              761000 ns] |       After 16 Reads: rbin == wbin | Exp:         20 | Eval:         20 | [PASS]
+[              825000 ns] |  Underflow Blocked: rbin unchanged | Exp:         20 | Eval:         20 | [PASS]
+
+----------------------------------------------------------------------------------------
+ >>> TEST 5: Corner Caÿÿÿâÿ” Simultaneous Read & Write While EMPTY [Req 2 & 3]
+----------------------------------------------------------------------------------------
+[              889000 ns] |   Simul R/W at Empty: Read Blocked | Exp:         20 | Eval:         20 | [PASS]
+[              937000 ns] |   Simul R/W at Empty: Written Data | Exp: 0xcafe0001 | Eval: 0xcafe0001 | [PASS]
+
+----------------------------------------------------------------------------------------
+ >>> TEST 6: Corner Case ÿÿ” Simultaneous Read & Write While FULL [Req 2 & 3]
+----------------------------------------------------------------------------------------
