@@ -3,8 +3,10 @@
 module async_fifo #(
     parameter int DATA_WIDTH = 32,
     parameter int FIFO_DEPTH = 16
-)(// Shared Asynchronous Reset
+)(
+    // Shared Asynchronous Reset
     input  logic                  arst_n,
+    
     // Write Interface
     input  logic                  wr_clk,
     input  logic                  wr_en,
@@ -18,11 +20,37 @@ module async_fifo #(
     output logic                  empty
 );
 
-
-    // Internal domain reset nets driven by the shared arst_n input
+    // Internal domain reset nets
     logic w_arst_n, r_arst_n;
-    assign w_arst_n = arst_n;
-    assign r_arst_n = arst_n;
+    
+    // Reset synchronizer internal nets
+    logic w_rst_meta, r_rst_meta;
+
+    // -------------------------------------------------------------------------
+    // Reset Synchronizers (Asynchronous Assert, Synchronous De-assert)
+    // -------------------------------------------------------------------------
+    // Write Domain Reset Synchronizer
+    always_ff @(posedge wr_clk or negedge arst_n) begin
+        if (!arst_n) begin
+            w_rst_meta <= 1'b0;
+            w_arst_n   <= 1'b0;
+        end else begin
+            w_rst_meta <= 1'b1;
+            w_arst_n   <= w_rst_meta;
+        end
+    end
+
+    // Read Domain Reset Synchronizer
+    always_ff @(posedge rd_clk or negedge arst_n) begin
+        if (!arst_n) begin
+            r_rst_meta <= 1'b0;
+            r_arst_n   <= 1'b0;
+        end else begin
+            r_rst_meta <= 1'b1;
+            r_arst_n   <= r_rst_meta;
+        end
+    end
+
     // Calculate address width automatically (16 depth -> 4 bits)
     localparam int ADDR_WIDTH = $clog2(FIFO_DEPTH);
 
@@ -35,7 +63,7 @@ module async_fifo #(
     logic [ADDR_WIDTH:0] rbin, rbin_next;
     logic [ADDR_WIDTH:0] rgray, rgray_next;
 
-    // 2-Stage Flip-Flop Synchronizer Registers (Pure SystemVerilog)
+    // 2-Stage Flip-Flop Synchronizer Registers
     logic [ADDR_WIDTH:0] wq1_rgray, wq2_rgray;
     logic [ADDR_WIDTH:0] rq1_wgray, rq2_wgray;
 
@@ -49,8 +77,12 @@ module async_fifo #(
         end
     end
 
-    // Combinational Read (valid data is immediately available on rd_data when !empty)
-    assign rd_data = mem[rbin[ADDR_WIDTH-1:0]];
+    // Synchronous Read on rd_clk (guarded by !empty)
+    always_ff @(posedge rd_clk) begin
+        if (rd_en && !empty) begin
+            rd_data <= mem[rbin[ADDR_WIDTH-1:0]];
+        end
+    end
 
     // -------------------------------------------------------------------------
     // 2. Read-to-Write Synchronizer (Crosses rgray into wr_clk domain)
@@ -112,4 +144,4 @@ module async_fifo #(
         end
     end
 
-    endmodule
+endmodule

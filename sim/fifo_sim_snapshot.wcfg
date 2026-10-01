@@ -10,15 +10,19 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="3,092.906 ns"></ZoomStartTime>
-      <ZoomEndTime time="3,811.407 ns"></ZoomEndTime>
-      <Cursor1Time time="4,279.300 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="315.401 ns"></ZoomEndTime>
+      <Cursor1Time time="140.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="276"></NameColumnWidth>
-      <ValueColumnWidth column_width="120"></ValueColumnWidth>
+      <NameColumnWidth column_width="154"></NameColumnWidth>
+      <ValueColumnWidth column_width="114"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="19" />
+   <WVObjectSize size="18" />
+   <wvobject type="logic" fp_name="/async_fifo_tb/arst_n">
+      <obj_property name="ElementShortName">arst_n</obj_property>
+      <obj_property name="ObjectShortName">arst_n</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/async_fifo_tb/test_case_name">
       <obj_property name="ElementShortName">test_case_name[255:0]</obj_property>
       <obj_property name="ObjectShortName">test_case_name[255:0]</obj_property>
@@ -30,10 +34,6 @@
    <wvobject type="logic" fp_name="/async_fifo_tb/dut/wr_clk">
       <obj_property name="ElementShortName">wr_clk</obj_property>
       <obj_property name="ObjectShortName">wr_clk</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/async_fifo_tb/dut/w_arst_n">
-      <obj_property name="ElementShortName">w_arst_n</obj_property>
-      <obj_property name="ObjectShortName">w_arst_n</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/async_fifo_tb/dut/wr_en">
       <obj_property name="ElementShortName">wr_en</obj_property>
@@ -66,10 +66,6 @@
    <wvobject type="logic" fp_name="/async_fifo_tb/dut/rd_clk">
       <obj_property name="ElementShortName">rd_clk</obj_property>
       <obj_property name="ObjectShortName">rd_clk</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/async_fifo_tb/dut/r_arst_n">
-      <obj_property name="ElementShortName">r_arst_n</obj_property>
-      <obj_property name="ObjectShortName">r_arst_n</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/async_fifo_tb/dut/rd_en">
       <obj_property name="ElementShortName">rd_en</obj_property>

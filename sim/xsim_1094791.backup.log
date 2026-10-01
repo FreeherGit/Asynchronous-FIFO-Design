@@ -3,8 +3,8 @@
 # SW Build 6299465 on Fri Nov 14 12:34:56 MST 2025
 # IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
 # SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
-# Start of session at: Wed Sep 30 18:08:31 2026
-# Process ID         : 19472
+# Start of session at: Thu Oct  1 16:42:04 2026
+# Process ID         : 1094791
 # Current directory  : /home/fariha/Desktop/async_fifo_design/sim
 # Command line       : xsim -log xsim.log -mode tcl -source {xsim.dir/fifo_sim_snapshot/xsim_script.tcl}
 # Log file           : /home/fariha/Desktop/async_fifo_design/sim/xsim.log
@@ -13,17 +13,18 @@
 # Platform           : Ubuntu
 # Operating System   : Ubuntu 24.04.4 LTS
 # Processor Detail   : Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz
-# CPU Frequency      : 4118.859 MHz
+# CPU Frequency      : 4000.025 MHz
 # CPU Physical cores : 6
 # CPU Logical cores  : 12
 # Host memory        : 41875 MB
 # Swap memory        : 27648 MB
 # Total Virtual      : 69524 MB
-# Available Virtual  : 67375 MB
+# Available Virtual  : 64672 MB
 #-----------------------------------------------------------
 source xsim.dir/fifo_sim_snapshot/xsim_script.tcl
 # xsim {fifo_sim_snapshot} -autoloadwcfg -runall
 Time resolution is 1 ps
+open_wave_config /home/fariha/Desktop/async_fifo_design/sim/fifo_sim_snapshot.wcfg
 run -all
 ========================================================================================
               ASYNCHRONOUS FIFO SELF-CHECKING VERIFICATION REPORT                       
@@ -48,10 +49,10 @@ run -all
 [               96000 ns] | WRITE Transaction                  | Data Written: 0xaaaa5555 | wbin= 3, full=0
 [              106000 ns] | WRITE Transaction                  | Data Written: 0x5555aaaa | wbin= 4, full=0
 [              153000 ns] |         After 4 Writes: empty flag | Exp:          0 | Eval:          0 | [PASS]
-[              153000 ns] |         Read Pattern 1 (All Zeros) | Exp: 0x00000000 | Eval: 0x00000000 | [PASS]
-[              169000 ns] |          Read Pattern 2 (All Ones) | Exp: 0xffffffff | Eval: 0xffffffff | [PASS]
-[              185000 ns] |        Read Pattern 3 (0xAAAA5555) | Exp: 0xaaaa5555 | Eval: 0xaaaa5555 | [PASS]
-[              201000 ns] |        Read Pattern 4 (0x5555AAAA) | Exp: 0x5555aaaa | Eval: 0x5555aaaa | [PASS]
+[              169000 ns] |         Read Pattern 1 (All Zeros) | Exp: 0x00000000 | Eval: 0x00000000 | [PASS]
+[              185000 ns] |          Read Pattern 2 (All Ones) | Exp: 0xffffffff | Eval: 0xffffffff | [PASS]
+[              201000 ns] |        Read Pattern 3 (0xAAAA5555) | Exp: 0xaaaa5555 | Eval: 0xaaaa5555 | [PASS]
+[              217000 ns] |        Read Pattern 4 (0x5555AAAA) | Exp: 0x5555aaaa | Eval: 0x5555aaaa | [PASS]
 [              217000 ns] |          After 4 Reads: empty flag | Exp:          1 | Eval:          1 | [PASS]
 
 ----------------------------------------------------------------------------------------
@@ -64,10 +65,10 @@ run -all
 ----------------------------------------------------------------------------------------
  >>> TEST 4: Drain all 16 Words to Empty & Underflow Block [Req 2]
 ----------------------------------------------------------------------------------------
-[              505000 ns] |                Burst Read Word [0] | Exp: 0xa0000000 | Eval: 0xa0000000 | [PASS]
-[              521000 ns] |                Burst Read Word [1] | Exp: 0xa0000001 | Eval: 0xa0000001 | [PASS]
-[              729000 ns] |               Burst Read Word [14] | Exp: 0xa000000e | Eval: 0xa000000e | [PASS]
-[              745000 ns] |               Burst Read Word [15] | Exp: 0xa000000f | Eval: 0xa000000f | [PASS]
+[              521000 ns] |                Burst Read Word [0] | Exp: 0xa0000000 | Eval: 0xa0000000 | [PASS]
+[              537000 ns] |                Burst Read Word [1] | Exp: 0xa0000001 | Eval: 0xa0000001 | [PASS]
+[              745000 ns] |               Burst Read Word [14] | Exp: 0xa000000e | Eval: 0xa000000e | [PASS]
+[              761000 ns] |               Burst Read Word [15] | Exp: 0xa000000f | Eval: 0xa000000f | [PASS]
 [              761000 ns] |         After 16 Reads: empty flag | Exp:          1 | Eval:          1 | [PASS]
 [              761000 ns] |       After 16 Reads: rbin == wbin | Exp:         20 | Eval:         20 | [PASS]
 [              825000 ns] |  Underflow Blocked: rbin unchanged | Exp:         20 | Eval:         20 | [PASS]
@@ -76,15 +77,15 @@ run -all
  >>> TEST 5: Corner Caÿÿÿâÿ” Simultaneous Read & Write While EMPTY [Req 2 & 3]
 ----------------------------------------------------------------------------------------
 [              889000 ns] |   Simul R/W at Empty: Read Blocked | Exp:         20 | Eval:         20 | [PASS]
-[              937000 ns] |   Simul R/W at Empty: Written Data | Exp: 0xcafe0001 | Eval: 0xcafe0001 | [PASS]
+[              953000 ns] |   Simul R/W at Empty: Written Data | Exp: 0xcafe0001 | Eval: 0xcafe0001 | [PASS]
 
 ----------------------------------------------------------------------------------------
  >>> TEST 6: Corner Case ÿÿ” Simultaneous Read & Write While FULL [Req 2 & 3]
 ----------------------------------------------------------------------------------------
 [             1193000 ns] | Pre-check before Test 6: full flag | Exp:          1 | Eval:          1 | [PASS]
-[             1193000 ns] |   Simul R/W at Full: Read Word [0] | Exp: 0xb0000000 | Eval: 0xb0000000 | [PASS]
+[             1209000 ns] |   Simul R/W at Full: Read Word [0] | Exp: 0xb0000000 | Eval: 0xb0000000 | [PASS]
 [             1210000 ns] |   Simul R/W at Full: Write Blocked | Exp:          5 | Eval:          5 | [PASS]
-[             1449000 ns] |                    Drain Word [15] | Exp: 0xb000000f | Eval: 0xb000000f | [PASS]
+[             1465000 ns] |                    Drain Word [15] | Exp: 0xb000000f | Eval: 0xb000000f | [PASS]
 
 ----------------------------------------------------------------------------------------
  >>> TEST 7: Full 5-Bit Pointer Rollover (36 Words > 2xDepth) [Req 2]
@@ -103,46 +104,46 @@ run -all
 ----------------------------------------------------------------------------------------
  >>> TEST 9: Concurrent R/W Stream (Fast Write 100MHz / Slow Read 62.5MHz) [Req 3 & 4]
 ----------------------------------------------------------------------------------------
-[             2889000 ns] |         Concurrent Stream Word [0] | Exp: 0xd0000000 | Eval: 0xd0000000 | [PASS]
 [             2896000 ns] | WRITE Transaction                  | Data Written: 0xd1000000 | wbin= 7, full=0
+[             2905000 ns] |         Concurrent Stream Word [0] | Exp: 0xd0000000 | Eval: 0xd0000000 | [PASS]
 [             3146000 ns] | WRITE Transaction                  | Data Written: 0xd1000017 | wbin=30, full=1
-[             3353000 ns] |        Concurrent Stream Word [29] | Exp: 0xd1000017 | Eval: 0xd1000017 | [PASS]
+[             3369000 ns] |        Concurrent Stream Word [29] | Exp: 0xd1000017 | Eval: 0xd1000017 | [PASS]
 [             3369000 ns] |          End of Stream: empty flag | Exp:          1 | Eval:          1 | [PASS]
 
 ----------------------------------------------------------------------------------------
  >>> TEST 10: Independent Clocks (Slow Write 50MHz / Fast Read 125MHz) [Req 4]
 ----------------------------------------------------------------------------------------
 [             3491000 ns] | WRITE Transaction                  | Data Written: 0xe0000000 | wbin=31, full=0
-[             3520000 ns] |                 Fast-Read Word [0] | Exp: 0xe0000000 | Eval: 0xe0000000 | [PASS]
+[             3529000 ns] |                 Fast-Read Word [0] | Exp: 0xe0000000 | Eval: 0xe0000000 | [PASS]
 [             3791000 ns] | WRITE Transaction                  | Data Written: 0xe000000f | wbin=14, full=0
-[             3809000 ns] |                Fast-Read Word [15] | Exp: 0xe000000f | Eval: 0xe000000f | [PASS]
+[             3817000 ns] |                Fast-Read Word [15] | Exp: 0xe000000f | Eval: 0xe000000f | [PASS]
 [             3817000 ns] | End of Fast-Read Stream: empty flag | Exp:          1 | Eval:          1 | [PASS]
 
 ----------------------------------------------------------------------------------------
  >>> TEST 11: Equal Frequency Clocks (100MHz) with 3.3ns Phase Offset [Req 4]
 ----------------------------------------------------------------------------------------
 [             3866000 ns] | WRITE Transaction                  | Data Written: 0xf0000000 | wbin=15, full=0
-[             3898000 ns] |             Phase-Shifted Word [0] | Exp: 0xf0000000 | Eval: 0xf0000000 | [PASS]
+[             3909000 ns] |             Phase-Shifted Word [0] | Exp: 0xf0000000 | Eval: 0xf0000000 | [PASS]
 [             4016000 ns] | WRITE Transaction                  | Data Written: 0xf000000f | wbin=30, full=0
-[             4049000 ns] |            Phase-Shifted Word [15] | Exp: 0xf000000f | Eval: 0xf000000f | [PASS]
+[             4059000 ns] |            Phase-Shifted Word [15] | Exp: 0xf000000f | Eval: 0xf000000f | [PASS]
 [             4059000 ns] | End of Phase-Shift Test: empty flag | Exp:          1 | Eval:          1 | [PASS]
 
 ----------------------------------------------------------------------------------------
  >>> TEST 12: Scalability Check on Secondary Instance (DATA_WIDTH=8, DEPTH=8) [Req 6]
 ----------------------------------------------------------------------------------------
 [             4146000 ns] |       Scaled 8x8 FIFO: s_full flag | Exp:          1 | Eval:          1 | [PASS]
-[             4169000 ns] |           Scaled 8x8 Read Byte [0] | Exp: 0x000000a0 | Eval: 0x000000a0 | [PASS]
-[             4179000 ns] |           Scaled 8x8 Read Byte [1] | Exp: 0x000000a1 | Eval: 0x000000a1 | [PASS]
-[             4189000 ns] |           Scaled 8x8 Read Byte [2] | Exp: 0x000000a2 | Eval: 0x000000a2 | [PASS]
-[             4199000 ns] |           Scaled 8x8 Read Byte [3] | Exp: 0x000000a3 | Eval: 0x000000a3 | [PASS]
-[             4209000 ns] |           Scaled 8x8 Read Byte [4] | Exp: 0x000000a4 | Eval: 0x000000a4 | [PASS]
-[             4219000 ns] |           Scaled 8x8 Read Byte [5] | Exp: 0x000000a5 | Eval: 0x000000a5 | [PASS]
-[             4229000 ns] |           Scaled 8x8 Read Byte [6] | Exp: 0x000000a6 | Eval: 0x000000a6 | [PASS]
-[             4239000 ns] |           Scaled 8x8 Read Byte [7] | Exp: 0x000000a7 | Eval: 0x000000a7 | [PASS]
+[             4179000 ns] |           Scaled 8x8 Read Byte [0] | Exp: 0x000000a0 | Eval: 0x000000a0 | [PASS]
+[             4189000 ns] |           Scaled 8x8 Read Byte [1] | Exp: 0x000000a1 | Eval: 0x000000a1 | [PASS]
+[             4199000 ns] |           Scaled 8x8 Read Byte [2] | Exp: 0x000000a2 | Eval: 0x000000a2 | [PASS]
+[             4209000 ns] |           Scaled 8x8 Read Byte [3] | Exp: 0x000000a3 | Eval: 0x000000a3 | [PASS]
+[             4219000 ns] |           Scaled 8x8 Read Byte [4] | Exp: 0x000000a4 | Eval: 0x000000a4 | [PASS]
+[             4229000 ns] |           Scaled 8x8 Read Byte [5] | Exp: 0x000000a5 | Eval: 0x000000a5 | [PASS]
+[             4239000 ns] |           Scaled 8x8 Read Byte [6] | Exp: 0x000000a6 | Eval: 0x000000a6 | [PASS]
+[             4249000 ns] |           Scaled 8x8 Read Byte [7] | Exp: 0x000000a7 | Eval: 0x000000a7 | [PASS]
 [             4249000 ns] |      Scaled 8x8 FIFO: s_empty flag | Exp:          1 | Eval:          1 | [PASS]
 
 ========================================================================================
-                           FINAL VERIFICATION SUMMARY                                   
+                            FINAL VERIFICATION SUMMARY                                  
 ========================================================================================
   Total Directed & Data Checks Passed   : 171
   Total Single-Bit Gray CDC Transitions : 710 (0 Glitches)
@@ -151,7 +152,7 @@ run -all
   OVERALL STATUS : *** ALL 12 TESTS & 6 DESIGN REQUIREMENTS PASSED! ***
 ========================================================================================
 
-$finish called at time : 4279300 ps : File "/home/fariha/Desktop/async_fifo_design/tb/async_fifo_tb.sv" Line 557
+$finish called at time : 4279300 ps : File "/home/fariha/Desktop/async_fifo_design/tb/async_fifo_tb.sv" Line 527
 exit
-INFO: xsimkernel Simulation Memory Usage: 289924 KB (Peak: 338484 KB), Simulation CPU Usage: 1150 ms
-INFO: [Common 17-206] Exiting xsim at Wed Sep 30 18:08:34 2026...
+INFO: xsimkernel Simulation Memory Usage: 289932 KB (Peak: 338492 KB), Simulation CPU Usage: 1150 ms
+INFO: [Common 17-206] Exiting xsim at Thu Oct  1 16:42:08 2026...

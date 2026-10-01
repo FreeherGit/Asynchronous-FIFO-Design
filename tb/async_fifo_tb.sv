@@ -9,7 +9,7 @@ module async_fifo_tb;
     localparam int FIFO_DEPTH = 16;
     localparam int ADDR_WIDTH = $clog2(FIFO_DEPTH);
 
-    logic                  arst_n;     // Shared active-low asynchronous reset
+    logic                  arst_n;     
     logic                  wr_clk;
     logic                  wr_en;
     logic [DATA_WIDTH-1:0] wr_data;
@@ -20,7 +20,6 @@ module async_fifo_tb;
     logic [DATA_WIDTH-1:0] rd_data;
     logic                  empty;
 
-    // ASCII string visible in Vivado / GTKWave waveform viewer
     reg [8*32-1:0] test_case_name = "INIT";
 
     // =========================================================================
@@ -39,8 +38,8 @@ module async_fifo_tb;
     // =========================================================================
     // 3. Clock Control & Scoreboard Variables
     // =========================================================================
-    realtime wr_half_period = 5.0;   // Default: 100 MHz (10 ns period)
-    realtime rd_half_period = 8.0;   // Default: 62.5 MHz (16 ns period)
+    realtime wr_half_period = 5.0;   
+    realtime rd_half_period = 8.0;   
     realtime rd_phase_shift = 0.0;
 
     logic [DATA_WIDTH-1:0] expected_q[$];
@@ -49,7 +48,7 @@ module async_fifo_tb;
     int cdc_checks  = 0;
 
     // =========================================================================
-    // 4. DUT Instantiations (Using shared arst_n port)
+    // 4. DUT Instantiations 
     // =========================================================================
     async_fifo #(
         .DATA_WIDTH (DATA_WIDTH),
@@ -82,7 +81,7 @@ module async_fifo_tb;
     );
 
     // =========================================================================
-    // 5. Waveform Dump & Safety Watchdog Timer (Guarantees Terminal Never Hangs)
+    // 5. Waveform Dump & Safety Watchdog Timer
     // =========================================================================
     initial begin
         $dumpfile("async_fifo_tb.vcd");
@@ -90,13 +89,13 @@ module async_fifo_tb;
     end
 
     initial begin
-        #100000; // 100 us safety timeout
+        #100000; 
         $display("\n[WATCHDOG ERROR] Simulation exceeded 100 us! Exiting safely to terminal.");
         $finish;
     end
 
     // =========================================================================
-    // 6. Independent Clock Generators (Requirement 4)
+    // 6. Independent Clock Generators 
     // =========================================================================
     initial begin
         wr_clk = 1'b0;
@@ -115,7 +114,7 @@ module async_fifo_tb;
     end
 
     // =========================================================================
-    // 7. Continuous Gray-Code CDC Single-Bit Transition Monitor (Requirement 5)
+    // 7. Continuous Gray-Code CDC Monitor 
     // =========================================================================
     logic [ADDR_WIDTH:0] prev_wgray = '0;
     logic [ADDR_WIDTH:0] prev_rgray = '0;
@@ -151,7 +150,7 @@ module async_fifo_tb;
     end
 
     // =========================================================================
-    // 8. Clear Terminal Logging & Verification Helper Tasks
+    // 8. Helper Tasks (UPDATED FOR 1-CYCLE READ LATENCY)
     // =========================================================================
     task automatic print_banner(input string title);
         $display("\n----------------------------------------------------------------------------------------");
@@ -159,7 +158,6 @@ module async_fifo_tb;
         $display("----------------------------------------------------------------------------------------");
     endtask
 
-    // Compares Expected vs Evaluated value and prints a clean row in the terminal
     task automatic verify_val(
         input string               check_desc,
         input logic [DATA_WIDTH:0] expected,
@@ -185,7 +183,6 @@ module async_fifo_tb;
         end
     endtask
 
-    // Safe single-word write task (waits if full, drives wr_en for 1 cycle)
     task automatic write_one(input logic [DATA_WIDTH-1:0] data, input bit verbose);
         while (full === 1'b1) @(posedge wr_clk);
         wr_en   <= 1'b1;
@@ -193,17 +190,24 @@ module async_fifo_tb;
         expected_q.push_back(data);
         @(posedge wr_clk);
         wr_en   <= 1'b0;
-        #1; // Let non-blocking assignments settle after posedge
+        #1; 
         if (verbose) begin
             $display("[%7t ns] | WRITE Transaction                  | Data Written: 0x%08h | wbin=%2d, full=%0b",
                      $time, data, dut.wbin, full);
         end
     endtask
 
-    // Safe single-word read & self-check task (waits if empty, checks rd_data, pulses rd_en)
+    // *CRITICAL FIX*: Assert rd_en first, wait for the clock edge, THEN check the data.
     task automatic read_and_verify(input string label, input bit verbose);
         logic [DATA_WIDTH-1:0] exp_data;
+        
         while (empty === 1'b1) @(posedge rd_clk);
+        
+        rd_en <= 1'b1;
+        @(posedge rd_clk); 
+        rd_en <= 1'b0;
+        #1; 
+        
         exp_data = expected_q.pop_front();
         if (verbose) begin
             verify_val(label, exp_data, rd_data, 1'b1);
@@ -215,14 +219,10 @@ module async_fifo_tb;
                          $time, label, exp_data, rd_data);
             end
         end
-        rd_en <= 1'b1;
-        @(posedge rd_clk);
-        rd_en <= 1'b0;
-        #1;
     endtask
 
     // =========================================================================
-    // 9. Main Test Sequence (12 Comprehensive Directed & Corner Cases)
+    // 9. Main Test Sequence 
     // =========================================================================
     initial begin
         arst_n    = 1'b1;
@@ -238,29 +238,25 @@ module async_fifo_tb;
         $display("              Default Config: DATA_WIDTH = %0d, FIFO_DEPTH = %0d                        ", DATA_WIDTH, FIFO_DEPTH);
         $display("========================================================================================");
 
-        // ---------------------------------------------------------------------
-        // TEST 1: Power-On Shared Asynchronous Reset (Requirement 1)
-        // ---------------------------------------------------------------------
+        // TEST 1
         test_case_name = "TEST1_ASYNC_RESET";
         print_banner("TEST 1: Shared Asynchronous Reset (arst_n) Assertion & Deassertion [Req 1]");
         #13;
-        arst_n = 1'b0; // Assert reset asynchronously
+        arst_n = 1'b0; 
         #25;
         verify_val("Reset Asserted: full flag",  0, full,      1'b0);
         verify_val("Reset Asserted: empty flag", 1, empty,     1'b0);
         verify_val("Reset Asserted: wbin ptr",   0, dut.wbin,  1'b0);
         verify_val("Reset Asserted: rbin ptr",   0, dut.rbin,  1'b0);
 
-        arst_n = 1'b1; // Release reset
+        arst_n = 1'b1; 
         @(posedge wr_clk);
         @(posedge rd_clk);
         #1;
         verify_val("Reset Released: full flag",  0, full,      1'b0);
         verify_val("Reset Released: empty flag", 1, empty,     1'b0);
 
-        // ---------------------------------------------------------------------
-        // TEST 2: Extreme Bit Patterns & CDC Latency (Requirements 2 & 5)
-        // ---------------------------------------------------------------------
+        // TEST 2
         test_case_name = "TEST2_DATA_PATTERNS";
         print_banner("TEST 2: Extreme Bit Patterns (All-0, All-1, Checkerboard) [Req 2 & 5]");
         @(posedge wr_clk); #1;
@@ -269,7 +265,6 @@ module async_fifo_tb;
         write_one(32'hAAAA_5555, 1'b1);
         write_one(32'h5555_AAAA, 1'b1);
 
-        // Wait for 2-FF synchronizer (rq1_wgray -> rq2_wgray) to update empty flag
         repeat (3) @(posedge rd_clk); #1;
         verify_val("After 4 Writes: empty flag", 0, empty, 1'b0);
 
@@ -280,9 +275,7 @@ module async_fifo_tb;
         verify_val("After 4 Reads: empty flag",  1, empty, 1'b0);
         repeat (3) @(posedge wr_clk); #1;
 
-        // ---------------------------------------------------------------------
-        // TEST 3: Fill to Full (16 Words) & Overflow Protection (Requirement 2)
-        // ---------------------------------------------------------------------
+        // TEST 3
         test_case_name = "TEST3_FULL_AND_OVERFLOW";
         print_banner("TEST 3: Continuous Burst Write to Full (16 Words) & Overflow Block [Req 2]");
         @(posedge wr_clk);
@@ -297,7 +290,6 @@ module async_fifo_tb;
         verify_val("After 16 Writes: full flag",     1,  full,                 1'b0);
         verify_val("After 16 Writes: Occupancy",     16, dut.wbin - dut.rbin,  1'b0);
 
-        // Corner Case: Attempt 4 extra writes while full=1 (Overflow attempt)
         begin
             automatic logic [ADDR_WIDTH:0] saved_wbin = dut.wbin;
             for (int i = 0; i < 4; i++) begin
@@ -311,19 +303,15 @@ module async_fifo_tb;
         end
         repeat (3) @(posedge rd_clk); #1;
 
-        // ---------------------------------------------------------------------
-        // TEST 4: Drain to Empty (16 Words) & Underflow Protection (Requirement 2)
-        // ---------------------------------------------------------------------
+        // TEST 4
         test_case_name = "TEST4_EMPTY_AND_UNDERFLOW";
         print_banner("TEST 4: Drain all 16 Words to Empty & Underflow Block [Req 2]");
         for (int i = 0; i < FIFO_DEPTH; i++) begin
-            // Print first 2 and last 2 reads to keep terminal clean and readable
             read_and_verify($sformatf("Burst Read Word [%0d]", i), (i < 2 || i >= 14));
         end
         verify_val("After 16 Reads: empty flag",     1, empty,    1'b0);
         verify_val("After 16 Reads: rbin == wbin",   dut.wbin, dut.rbin, 1'b0);
 
-        // Corner Case: Attempt 4 extra reads while empty=1 (Underflow attempt)
         begin
             automatic logic [ADDR_WIDTH:0] saved_rbin = dut.rbin;
             for (int i = 0; i < 4; i++) begin
@@ -336,9 +324,7 @@ module async_fifo_tb;
         end
         repeat (3) @(posedge wr_clk); #1;
 
-        // ---------------------------------------------------------------------
-        // TEST 5: Corner Case — Simultaneous R/W While EMPTY (Req 2 & 3)
-        // ---------------------------------------------------------------------
+        // TEST 5
         test_case_name = "TEST5_RW_AT_EMPTY";
         print_banner("TEST 5: Corner Case — Simultaneous Read & Write While EMPTY [Req 2 & 3]");
         begin
@@ -354,7 +340,7 @@ module async_fifo_tb;
                 end
                 begin
                     @(posedge rd_clk);
-                    rd_en <= 1'b1; // Must be ignored because empty=1
+                    rd_en <= 1'b1; 
                     @(posedge rd_clk);
                     rd_en <= 1'b0;
                 end
@@ -366,9 +352,7 @@ module async_fifo_tb;
             repeat (3) @(posedge wr_clk); #1;
         end
 
-        // ---------------------------------------------------------------------
-        // TEST 6: Corner Case — Simultaneous R/W While FULL (Req 2 & 3)
-        // ---------------------------------------------------------------------
+        // TEST 6
         test_case_name = "TEST6_RW_AT_FULL";
         print_banner("TEST 6: Corner Case — Simultaneous Read & Write While FULL [Req 2 & 3]");
         @(posedge wr_clk); #1;
@@ -384,7 +368,7 @@ module async_fifo_tb;
                 begin
                     @(posedge wr_clk);
                     wr_en   <= 1'b1;
-                    wr_data <= 32'hBAD0_FFFF; // Must be blocked because full=1
+                    wr_data <= 32'hBAD0_FFFF; 
                     @(posedge wr_clk);
                     wr_en   <= 1'b0;
                 end
@@ -401,9 +385,7 @@ module async_fifo_tb;
             repeat (3) @(posedge wr_clk); #1;
         end
 
-        // ---------------------------------------------------------------------
-        // TEST 7: Corner Case — Full 5-Bit Pointer Rollover (31 -> 0) (Req 2)
-        // ---------------------------------------------------------------------
+        // TEST 7
         test_case_name = "TEST7_5BIT_PTR_ROLLOVER";
         print_banner("TEST 7: Full 5-Bit Pointer Rollover (36 Words > 2xDepth) [Req 2]");
         for (int lap = 0; lap < 3; lap++) begin
@@ -419,16 +401,14 @@ module async_fifo_tb;
         verify_val("After 36 Words: empty flag", 1, empty, 1'b0);
         verify_val("After 36 Words: wbin == rbin", dut.wbin, dut.rbin, 1'b0);
 
-        // ---------------------------------------------------------------------
-        // TEST 8: Corner Case — Mid-Operation Asynchronous Reset (Req 1)
-        // ---------------------------------------------------------------------
+        // TEST 8
         test_case_name = "TEST8_MID_OP_RESET";
         print_banner("TEST 8: Mid-Operation Asynchronous Reset Recovery [Req 1]");
         for (int i = 0; i < 6; i++) begin
             write_one(32'hDEAD_0000 + i, 1'b0);
         end
         repeat (2) @(posedge rd_clk);
-        #3; // Assert reset asynchronously mid-operation
+        #3; 
         arst_n = 1'b0;
         expected_q.delete();
         #25;
@@ -439,12 +419,9 @@ module async_fifo_tb;
         arst_n = 1'b1;
         repeat (3) @(posedge wr_clk); #1;
 
-        // ---------------------------------------------------------------------
-        // TEST 9: Simultaneous R/W Stream — Fast Write / Slow Read (Req 3 & 4)
-        // ---------------------------------------------------------------------
+        // TEST 9
         test_case_name = "TEST9_CONCURRENT_FAST_WR";
         print_banner("TEST 9: Concurrent R/W Stream (Fast Write 100MHz / Slow Read 62.5MHz) [Req 3 & 4]");
-        // Pre-load 6 words
         for (int i = 0; i < 6; i++) begin
             write_one(32'hD000_0000 + i, 1'b0);
         end
@@ -465,13 +442,11 @@ module async_fifo_tb;
         verify_val("End of Stream: empty flag", 1, empty, 1'b0);
         repeat (3) @(posedge wr_clk); #1;
 
-        // ---------------------------------------------------------------------
-        // TEST 10: Independent Clocks — Slow Write / Fast Read (Requirement 4)
-        // ---------------------------------------------------------------------
+        // TEST 10
         test_case_name = "TEST10_SLOW_WR_FAST_RD";
         print_banner("TEST 10: Independent Clocks (Slow Write 50MHz / Fast Read 125MHz) [Req 4]");
-        wr_half_period = 10.0; // 50 MHz
-        rd_half_period = 4.0;  // 125 MHz
+        wr_half_period = 10.0; 
+        rd_half_period = 4.0;  
         repeat (4) @(posedge wr_clk); #1;
 
         fork
@@ -488,14 +463,12 @@ module async_fifo_tb;
         join
         verify_val("End of Fast-Read Stream: empty flag", 1, empty, 1'b0);
 
-        // ---------------------------------------------------------------------
-        // TEST 11: Equal Clock Frequencies with Phase Shift (Requirement 4)
-        // ---------------------------------------------------------------------
+        // TEST 11
         test_case_name = "TEST11_PHASE_SHIFT_CLKS";
         print_banner("TEST 11: Equal Frequency Clocks (100MHz) with 3.3ns Phase Offset [Req 4]");
-        wr_half_period = 5.0;  // 100 MHz
-        rd_half_period = 5.0;  // 100 MHz
-        rd_phase_shift = 3.3;  // 3.3 ns phase shift
+        wr_half_period = 5.0;  
+        rd_half_period = 5.0;  
+        rd_phase_shift = 3.3;  
         repeat (4) @(posedge wr_clk); #1;
 
         fork
@@ -512,9 +485,7 @@ module async_fifo_tb;
         join
         verify_val("End of Phase-Shift Test: empty flag", 1, empty, 1'b0);
 
-        // ---------------------------------------------------------------------
-        // TEST 12: Parameter Scalability on 8-bit x 8-deep FIFO (Requirement 6)
-        // ---------------------------------------------------------------------
+        // TEST 12
         test_case_name = "TEST12_SCALABILITY_8x8";
         print_banner("TEST 12: Scalability Check on Secondary Instance (DATA_WIDTH=8, DEPTH=8) [Req 6]");
         @(posedge wr_clk);
@@ -528,22 +499,21 @@ module async_fifo_tb;
         verify_val("Scaled 8x8 FIFO: s_full flag", 1, s_full, 1'b0);
 
         repeat (3) @(posedge rd_clk); #1;
+        // *CRITICAL FIX*: Assert read enable, wait for clock, then evaluate
         for (int i = 0; i < SCALED_DEPTH; i++) begin
-            verify_val($sformatf("Scaled 8x8 Read Byte [%0d]", i), 8'hA0 + i[7:0], s_rd_data, 1'b1);
             s_rd_en <= 1'b1;
             @(posedge rd_clk);
             s_rd_en <= 1'b0;
-            #1;
+            #1; 
+            verify_val($sformatf("Scaled 8x8 Read Byte [%0d]", i), 8'hA0 + i[7:0], s_rd_data, 1'b1);
         end
         verify_val("Scaled 8x8 FIFO: s_empty flag", 1, s_empty, 1'b0);
 
-        // ---------------------------------------------------------------------
-        // Final Summary Table
-        // ---------------------------------------------------------------------
+        // Final Summary
         test_case_name = "COMPLETE_ALL_PASS";
         #30;
         $display("\n========================================================================================");
-        $display("                           FINAL VERIFICATION SUMMARY                                   ");
+        $display("                            FINAL VERIFICATION SUMMARY                                  ");
         $display("========================================================================================");
         $display("  Total Directed & Data Checks Passed   : %0d", pass_count);
         $display("  Total Single-Bit Gray CDC Transitions : %0d (0 Glitches)", cdc_checks);

@@ -3,8 +3,8 @@
 # SW Build 6299465 on Fri Nov 14 12:34:56 MST 2025
 # IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
 # SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
-# Start of session at: Wed Sep 30 18:13:48 2026
-# Process ID         : 24941
+# Start of session at: Thu Oct  1 16:42:29 2026
+# Process ID         : 1095427
 # Current directory  : /home/fariha/Desktop/async_fifo_design/sim
 # Command line       : xsim -source {xsim.dir/fifo_sim_snapshot/xsim_script.tcl}
 # Log file           : /home/fariha/Desktop/async_fifo_design/sim/xsim.log
@@ -13,17 +13,16 @@
 # Platform           : Ubuntu
 # Operating System   : Ubuntu 24.04.4 LTS
 # Processor Detail   : Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz
-# CPU Frequency      : 4009.134 MHz
+# CPU Frequency      : 4000.030 MHz
 # CPU Physical cores : 6
 # CPU Logical cores  : 12
 # Host memory        : 41875 MB
 # Swap memory        : 27648 MB
 # Total Virtual      : 69524 MB
-# Available Virtual  : 65358 MB
+# Available Virtual  : 64658 MB
 #-----------------------------------------------------------
 start_gui
 source xsim.dir/fifo_sim_snapshot/xsim_script.tcl
+open_wave_config /home/fariha/Desktop/async_fifo_design/sim/fifo_sim_snapshot.wcfg
 source xsim_gui.tcl
 save_wave_config {/home/fariha/Desktop/async_fifo_design/sim/fifo_sim_snapshot.wcfg}
-add_files -fileset sim_1 -norecurse /home/fariha/Desktop/async_fifo_design/sim/fifo_sim_snapshot.wcfg
-set_property xsim.view /home/fariha/Desktop/async_fifo_design/sim/fifo_sim_snapshot.wcfg [get_filesets sim_1]
